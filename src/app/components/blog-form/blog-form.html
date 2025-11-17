@@ -1,0 +1,71 @@
+<div class="blog-form-container">
+  <h1>{{ isEditMode() ? 'Editar Blog' : 'Crear Nuevo Blog' }}</h1>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  <form [formGroup]="blogForm" (ngSubmit)="onSubmit()" class="blog-form">
+    <div class="form-group">
+      <label for="titulo">Título *</label>
+      <input
+        type="text"
+        id="titulo"
+        formControlName="titulo"
+        class="form-control"
+        [class.invalid]="blogForm.get('titulo')?.invalid && blogForm.get('titulo')?.touched"
+        placeholder="Introduce el título del blog">
+      @if (getErrorMessage('titulo')) {
+        <span class="error-message">{{ getErrorMessage('titulo') }}</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="categoria">Categoría *</label>
+      <input
+        type="text"
+        id="categoria"
+        formControlName="categoria"
+        class="form-control"
+        [class.invalid]="blogForm.get('categoria')?.invalid && blogForm.get('categoria')?.touched"
+        placeholder="Ej: Tecnología, Viajes, Cocina...">
+      @if (getErrorMessage('categoria')) {
+        <span class="error-message">{{ getErrorMessage('categoria') }}</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="contenido">Contenido *</label>
+      <textarea
+        id="contenido"
+        formControlName="contenido"
+        class="form-control"
+        rows="10"
+        [class.invalid]="blogForm.get('contenido')?.invalid && blogForm.get('contenido')?.touched"
+        placeholder="Escribe el contenido del blog..."></textarea>
+      @if (getErrorMessage('contenido')) {
+        <span class="error-message">{{ getErrorMessage('contenido') }}</span>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button 
+        type="button" 
+        (click)="cancel()" 
+        class="btn btn-secondary"
+        [disabled]="loading()">
+        Cancelar
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="loading() || blogForm.invalid">
+        @if (loading()) {
+          Guardando...
+        } @else {
+          {{ isEditMode() ? 'Actualizar' : 'Crear' }} Blog
+        }
+      </button>
+    </div>
+  </form>
+</div>

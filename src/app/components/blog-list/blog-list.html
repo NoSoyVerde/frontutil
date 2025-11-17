@@ -1,0 +1,88 @@
+<div class="blog-list-container">
+  <h1>Buscar Blogs</h1>
+  
+  <div class="search-form">
+    <div class="form-group">
+      <label for="searchType">Buscar por:</label>
+      <select 
+        id="searchType" 
+        [(ngModel)]="searchType" 
+        class="form-control">
+        <option value="categoria">Categoría</option>
+        <option value="titulo">Título</option>
+        <option value="contenido">Contenido</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="searchValue">Valor:</label>
+      <input 
+        type="text" 
+        id="searchValue" 
+        [(ngModel)]="searchValue"
+        (keyup.enter)="search()"
+        class="form-control"
+        placeholder="Introduce el valor de búsqueda">
+    </div>
+    
+    <button (click)="search()" class="btn btn-primary" [disabled]="loading()">
+      @if (loading()) {
+        Buscando...
+      } @else {
+        Buscar
+      }
+    </button>
+    
+    <a routerLink="/blogs/new" class="btn btn-success">Crear Nuevo Blog</a>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="loading">Cargando blogs...</div>
+  }
+
+  @if (blogs().length > 0) {
+    <div class="blogs-grid">
+      @for (blog of blogs(); track blog.id) {
+        <div class="blog-card">
+          <h3>{{ blog.titulo }}</h3>
+          <p class="blog-category">Categoría: {{ blog.categoria }}</p>
+          <p class="blog-content">{{ blog.contenido.substring(0, 150) }}...</p>
+          <div class="blog-dates">
+            <small>Creado: {{ blog.fechaCreacion }}</small>
+            @if (blog.fechaModificacion) {
+              <small>Modificado: {{ blog.fechaModificacion }}</small>
+            }
+          </div>
+          <div class="blog-actions">
+            <a [routerLink]="['/blogs', blog.id]" class="btn btn-info">Ver Detalle</a>
+            <a [routerLink]="['/blogs/edit', blog.id]" class="btn btn-warning">Editar</a>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="pagination">
+      <button 
+        (click)="previousPage()" 
+        [disabled]="currentPage() === 0"
+        class="btn btn-secondary">
+        Anterior
+      </button>
+      <span class="page-info">Página {{ currentPage() + 1 }} de {{ totalPages() }}</span>
+      <button 
+        (click)="nextPage()" 
+        [disabled]="currentPage() >= totalPages() - 1"
+        class="btn btn-secondary">
+        Siguiente
+      </button>
+    </div>
+  } @else if (!loading() && !error()) {
+    <div class="no-results">
+      <p>No hay resultados. Realiza una búsqueda para ver blogs.</p>
+    </div>
+  }
+</div>
