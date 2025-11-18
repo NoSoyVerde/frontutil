@@ -70,21 +70,67 @@
       }
     </div>
 
-    <div class="pagination">
-      <button 
-        (click)="previousPage()" 
-        [disabled]="currentPage() === 0"
-        class="btn btn-secondary">
-        Anterior
-      </button>
-      <span class="page-info">Página {{ currentPage() + 1 }} de {{ totalPages() }}</span>
-      <button 
-        (click)="nextPage()" 
-        [disabled]="currentPage() >= totalPages() - 1"
-        class="btn btn-secondary">
-        Siguiente
-      </button>
+    <!-- Botonera de Paginación -->
+    <div class="pagination-container">
+      <div class="pagination-info">
+        <span>Mostrando {{ blogs().length }} de {{ totalElements() }} blogs</span>
+      </div>
+      
+      <div class="pagination">
+        <!-- Botón Primera Página -->
+        <button 
+          (click)="firstPage()" 
+          [disabled]="currentPage() === 0 || loading()"
+          class="btn-page btn-nav"
+          title="Primera página">
+          ⟪
+        </button>
+        
+        <!-- Botón Anterior -->
+        <button 
+          (click)="previousPage()" 
+          [disabled]="currentPage() === 0 || loading()"
+          class="btn-page btn-nav"
+          title="Anterior">
+          ‹
+        </button>
+
+        <!-- Números de Página -->
+        @for (pageNum of getPageNumbers(); track $index) {
+          @if (pageNum === null) {
+            <span class="page-dots">...</span>
+          } @else {
+            <button
+              (click)="goToPage(pageNum)"
+              [class.active]="pageNum === currentPage()"
+              [disabled]="loading()"
+              class="btn-page btn-number"
+              [title]="'Página ' + (pageNum + 1)">
+              {{ pageNum + 1 }}
+            </button>
+          }
+        }
+
+        <!-- Botón Siguiente -->
+        <button 
+          (click)="nextPage()" 
+          [disabled]="currentPage() >= totalPages() - 1 || loading()"
+          class="btn-page btn-nav"
+          title="Siguiente">
+          ›
+        </button>
+        
+        <!-- Botón Última Página -->
+        <button 
+          (click)="lastPage()" 
+          [disabled]="currentPage() >= totalPages() - 1 || loading()"
+          class="btn-page btn-nav"
+          title="Última página">
+          ⟫
+        </button>
+      </div>
     </div>
+
   } @else if (!loading() && !error()) {
     <div class="no-results">
       <p>No hay resultados. Realiza una búsqueda para ver blogs.</p>
