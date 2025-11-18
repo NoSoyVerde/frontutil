@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BlogService } from '../../services/blog.service';
+import { BlogService } from '../../service/blog.service';
 import { BlogEntity } from '../../models/blog-entity';
 
 @Component({
@@ -25,9 +25,9 @@ export class BlogForm implements OnInit {
 
   constructor() {
     this.blogForm = this.fb.group({
-      titulo: ['', [Validators.required, Validators.minLength(3)]],
-      contenido: ['', [Validators.required, Validators.minLength(10)]],
-      categoria: ['', [Validators.required]]
+      titulo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(1024)]],
+      contenido: ['', [Validators.required, Validators.minLength(3)]],
+      etiquetas: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(1024)]]
     });
   }
 
@@ -47,12 +47,23 @@ export class BlogForm implements OnInit {
         this.blogForm.patchValue({
           titulo: blog.titulo,
           contenido: blog.contenido,
-          categoria: blog.categoria
+          etiquetas: blog.etiquetas
         });
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set('Error al cargar el blog: ' + err.message);
+        console.error('Error al cargar blog:', err);
+        let errorMessage = 'Error al cargar el blog';
+        
+        if (err.status === 0) {
+          errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté ejecutándose en http://localhost:8089';
+        } else if (err.error?.message) {
+          errorMessage = err.error.message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+        
+        this.error.set(errorMessage);
         this.loading.set(false);
       }
     });
@@ -67,13 +78,10 @@ export class BlogForm implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    const blogData: BlogEntity = {
-      ...this.blogForm.value,
-      ...(this.isEditMode() && { id: this.blogId() })
-    };
+    const blogData = this.blogForm.value;
 
     const operation = this.isEditMode()
-      ? this.blogService.update(blogData)
+      ? this.blogService.update(this.blogId()!, blogData)
       : this.blogService.create(blogData);
 
     operation.subscribe({
@@ -82,7 +90,18 @@ export class BlogForm implements OnInit {
         this.router.navigate(['/blogs']);
       },
       error: (err) => {
-        this.error.set('Error al guardar el blog: ' + err.message);
+        console.error('Error completo:', err);
+        let errorMessage = 'Error al guardar el blog';
+        
+        if (err.status === 0) {
+          errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté ejecutándose en http://localhost:8089';
+        } else if (err.error?.message) {
+          errorMessage = err.error.message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+        
+        this.error.set(errorMessage);
         this.loading.set(false);
       }
     });

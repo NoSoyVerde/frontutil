@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BlogService } from '../../services/blog.service';
+import { BlogService } from '../../service/blog.service';
 import { BlogEntity } from '../../models/blog-entity';
 
 @Component({
@@ -36,7 +36,38 @@ export class BlogDetail implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set('Error al cargar el blog: ' + err.message);
+        console.error('Error al cargar blog:', err);
+        let errorMessage = 'Error al cargar el blog';
+        
+        if (err.status === 0) {
+          errorMessage = 'No se puede conectar al servidor';
+        } else if (err.status === 404) {
+          errorMessage = 'Blog no encontrado';
+        } else if (err.error?.message) {
+          errorMessage = err.error.message;
+        }
+        
+        this.error.set(errorMessage);
+        this.loading.set(false);
+      }
+    });
+  }
+
+  protected deleteBlog(): void {
+    const blogId = this.blog()?.id;
+    if (!blogId) return;
+
+    if (!confirm('¿Estás seguro de que quieres eliminar este blog?')) {
+      return;
+    }
+
+    this.loading.set(true);
+    this.blogService.delete(blogId).subscribe({
+      next: () => {
+        this.router.navigate(['/blogs']);
+      },
+      error: (err) => {
+        this.error.set('Error al eliminar el blog: ' + err.message);
         this.loading.set(false);
       }
     });

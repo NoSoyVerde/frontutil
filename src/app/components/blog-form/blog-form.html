@@ -21,16 +21,16 @@
     </div>
 
     <div class="form-group">
-      <label for="categoria">Categoría *</label>
+      <label for="etiquetas">Etiquetas *</label>
       <input
         type="text"
-        id="categoria"
-        formControlName="categoria"
+        id="etiquetas"
+        formControlName="etiquetas"
         class="form-control"
-        [class.invalid]="blogForm.get('categoria')?.invalid && blogForm.get('categoria')?.touched"
+        [class.invalid]="blogForm.get('etiquetas')?.invalid && blogForm.get('etiquetas')?.touched"
         placeholder="Ej: Tecnología, Viajes, Cocina...">
-      @if (getErrorMessage('categoria')) {
-        <span class="error-message">{{ getErrorMessage('categoria') }}</span>
+      @if (getErrorMessage('etiquetas')) {
+        <span class="error-message">{{ getErrorMessage('etiquetas') }}</span>
       }
     </div>
 

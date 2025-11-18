@@ -8,7 +8,7 @@
         id="searchType" 
         [(ngModel)]="searchType" 
         class="form-control">
-        <option value="categoria">Categoría</option>
+        <option value="etiquetas">Etiquetas</option>
         <option value="titulo">Título</option>
         <option value="contenido">Contenido</option>
       </select>
@@ -32,6 +32,10 @@
         Buscar
       }
     </button>
+
+    @if (searchValue()) {
+      <button (click)="clearSearch()" class="btn btn-secondary">Limpiar</button>
+    }
     
     <a routerLink="/blogs/new" class="btn btn-success">Crear Nuevo Blog</a>
   </div>
@@ -49,7 +53,7 @@
       @for (blog of blogs(); track blog.id) {
         <div class="blog-card">
           <h3>{{ blog.titulo }}</h3>
-          <p class="blog-category">Categoría: {{ blog.categoria }}</p>
+          <p class="blog-category">Etiquetas: {{ blog.etiquetas }}</p>
           <p class="blog-content">{{ blog.contenido.substring(0, 150) }}...</p>
           <div class="blog-dates">
             <small>Creado: {{ blog.fechaCreacion }}</small>
@@ -60,6 +64,7 @@
           <div class="blog-actions">
             <a [routerLink]="['/blogs', blog.id]" class="btn btn-info">Ver Detalle</a>
             <a [routerLink]="['/blogs/edit', blog.id]" class="btn btn-warning">Editar</a>
+            <button (click)="deleteBlog(blog.id!)" class="btn btn-danger">Eliminar</button>
           </div>
         </div>
       }

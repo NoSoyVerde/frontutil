@@ -15,7 +15,7 @@
       <header class="blog-header">
         <h1>{{ blog()!.titulo }}</h1>
         <div class="blog-meta">
-          <span class="blog-category">📁 {{ blog()!.categoria }}</span>
+          <span class="blog-category">🏷️ {{ blog()!.etiquetas }}</span>
           <span class="blog-date">📅 Creado: {{ blog()!.fechaCreacion }}</span>
           @if (blog()!.fechaModificacion) {
             <span class="blog-date">✏️ Modificado: {{ blog()!.fechaModificacion }}</span>
@@ -29,7 +29,8 @@
 
       <footer class="blog-footer">
         <button (click)="goBack()" class="btn btn-secondary">← Volver</button>
-        <a [routerLink]="['/blogs/edit', blog()!.id]" class="btn btn-warning">Editar Blog</a>
+        <a [routerLink]="['/blogs/edit', blog()!.id]" class="btn btn-warning">✏️ Editar</a>
+        <button (click)="deleteBlog()" class="btn btn-danger">🗑️ Eliminar</button>
       </footer>
     </article>
   }
